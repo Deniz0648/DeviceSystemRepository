@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace DeviceSystemRepository.Models
 {
@@ -10,9 +9,10 @@ namespace DeviceSystemRepository.Models
         public required string MacAdress { get; set; }
         public required string ConnectionType { get; set; }
 
-        public bool Equals(NetworkInformationsModel other)
+        // IEquatable interface implementation
+        public bool Equals(NetworkInformationsModel? other)
         {
-            if (other == null)
+            if (other is null)
                 return false;
 
             return HostName == other.HostName &&
@@ -21,7 +21,11 @@ namespace DeviceSystemRepository.Models
                    ConnectionType == other.ConnectionType;
         }
 
-        public override bool Equals(object obj) => Equals(obj as NetworkInformationsModel);
+        // Override Equals for object
+        public override bool Equals(object? obj)
+        {
+            return obj is NetworkInformationsModel other && Equals(other);
+        }
 
         public override int GetHashCode()
         {

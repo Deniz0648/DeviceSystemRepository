@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DeviceSystemRepository.Models
+﻿namespace DeviceSystemRepository.Models
 {
     internal class DiskInformationsModel : IEquatable<DiskInformationsModel>
     {
@@ -11,7 +8,8 @@ namespace DeviceSystemRepository.Models
         public long DiskCapacity { get; set; }
         public required string MediaType { get; set; }
 
-        public bool Equals(DiskInformationsModel other)
+        // Equals metodunun parametre türünü nullable yapıyoruz
+        public bool Equals(DiskInformationsModel? other)
         {
             if (other == null)
                 return false;
@@ -23,7 +21,7 @@ namespace DeviceSystemRepository.Models
                    MediaType == other.MediaType;
         }
 
-        public override bool Equals(object obj) => Equals(obj as DiskInformationsModel);
+        public override bool Equals(object? obj) => obj is DiskInformationsModel other && Equals(other);
 
         public override int GetHashCode()
         {

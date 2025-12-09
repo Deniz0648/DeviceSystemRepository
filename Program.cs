@@ -20,7 +20,7 @@ namespace DeviceSystemRepository
                     // Add HttpClient for ApiClientService with configuration
                     services.AddHttpClient<ClientService>(client =>
                     {
-                        client.BaseAddress = new Uri("https://10.198.44.35:8081/");
+                        client.BaseAddress = new Uri("http://192.168.198.75:8081/");
                     })
                     .ConfigurePrimaryHttpMessageHandler(() =>
                     {
@@ -33,7 +33,7 @@ namespace DeviceSystemRepository
                     // Add HttpClient for PulseService with configuration
                     services.AddHttpClient<PulseService>(client =>
                     {
-                        client.BaseAddress = new Uri("https://10.198.44.35:8081/");
+                        client.BaseAddress = new Uri("http://192.168.198.75:8081/");
                     })
                     .ConfigurePrimaryHttpMessageHandler(() =>
                     {

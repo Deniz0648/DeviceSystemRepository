@@ -26,6 +26,8 @@ namespace DeviceSystemRepository.Services.CollectorService
         public static string GetPCModel() => _systemInfoProvider.GetPCModel();
         public static string GetPCSerialNumber() => _systemInfoProvider.GetPCSerialNumber();
 
+        internal static List<MonitorInformationsModel> GetMonitorInformations() => _systemInfoProvider.GetMonitorInformations();
+
         // İşletim sistemi sürümünü al
         public static string GetOSVersion() => _systemInfoProvider.GetOSVersion();
 
@@ -68,5 +70,7 @@ namespace DeviceSystemRepository.Services.CollectorService
 
         // Takılı RAM modüllerinin sayısını al
         public static int GetInstalledRamModules() => _systemInfoProvider.GetInstalledRamModules();
+
+        
     }
 }

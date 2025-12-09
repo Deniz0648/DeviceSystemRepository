@@ -14,9 +14,30 @@ namespace DeviceSystemRepository.Services.ManagerServices
         private readonly ClientService _clientService;
         private SystemInformationsModel _cachedSystemInformations;
 
+
         public SystemInformationsManager(ClientService clientService)
         {
             _clientService = clientService ?? throw new ArgumentNullException(nameof(clientService));
+            _cachedSystemInformations = new SystemInformationsModel
+            {
+                HostName = "",
+                UserName = "",
+                CpuModel = "",
+                GpuModel = "",
+                InstalledRamModules= 0,
+                IPAddress = "",
+                MACAddress = "",
+                OSVersion = "",
+                PCModel = "",
+                PCSerialNumber = "",
+                Status = true,
+                TotalDisks = 0,
+                TotalRam = 0,
+                Disks = [],
+                Monitors = [],
+                Networks = []
+
+            };
             LoadCachedSystemInformations();
         }
 
@@ -31,16 +52,29 @@ namespace DeviceSystemRepository.Services.ManagerServices
             string cacheFilePath = GetCacheFilePath();
             if (File.Exists(cacheFilePath))
             {
-                var json = File.ReadAllText(cacheFilePath);
-                _cachedSystemInformations = JsonSerializer.Deserialize<SystemInformationsModel>(json);
+                try
+                {
+                    var json = File.ReadAllText(cacheFilePath);
+                    _cachedSystemInformations = JsonSerializer.Deserialize<SystemInformationsModel>(json)!;
+                }
+                catch
+                {
+                    Console.WriteLine("Önbellek dosyası bozuk. Varsayılan bilgi atanıyor.");
+                    _cachedSystemInformations = new SystemInformationsModel();
+                }
+            }
+            else
+            {
+                _cachedSystemInformations = new SystemInformationsModel();
             }
         }
+
 
         private void SaveCachedSystemInformations()
         {
             string cacheFilePath = GetCacheFilePath();
             var json = JsonSerializer.Serialize(_cachedSystemInformations);
-            Directory.CreateDirectory(Path.GetDirectoryName(cacheFilePath)); // Ensure the directory exists
+            Directory.CreateDirectory(Path.GetDirectoryName(cacheFilePath)!); // Ensure the directory exists
             File.WriteAllText(cacheFilePath, json);
         }
 
@@ -54,10 +88,10 @@ namespace DeviceSystemRepository.Services.ManagerServices
                 var currentSystemInformations = SystemInformationsCollector.GetSystemInformations();
 
                 // Bellekteki eski veriyi kontrol et
-                Console.WriteLine("Eski Sistem Bilgileri:");
+                //Console.WriteLine("Eski Sistem Bilgileri:");
                 if (_cachedSystemInformations != null)
                 {
-                    LogSystemInformation("Eski Sistem Bilgileri:", _cachedSystemInformations);
+                    LogSystemInformation("Eski Sistem Bilgileri:", _cachedSystemInformations, GetOptions());
                 }
                 else
                 {
@@ -72,7 +106,10 @@ namespace DeviceSystemRepository.Services.ManagerServices
                     _cachedSystemInformations = currentSystemInformations;
 
                     // Veriyi POST et
-                    await _clientService.PostAsync(_cachedSystemInformations);
+                    await _clientService.PostAsync(_cachedSystemInformations, ClientService.GetOptions());
+
+                    //// Gönderilen veriyi konsola yazdır
+                    //LogSystemInformation("Gönderilen Sistem Bilgileri:", _cachedSystemInformations);
 
                     // Veriyi sakla
                     SaveCachedSystemInformations();
@@ -90,10 +127,12 @@ namespace DeviceSystemRepository.Services.ManagerServices
             }
         }
 
-        private static bool AreSystemInformationsEqual(SystemInformationsModel oldData, SystemInformationsModel newData)
+        private static bool AreSystemInformationsEqual(SystemInformationsModel? oldData, SystemInformationsModel? newData)
         {
             if (oldData == null || newData == null)
                 return false;
+
+
 
             return oldData.HostName == newData.HostName &&
                    oldData.UserName == newData.UserName &&
@@ -109,38 +148,125 @@ namespace DeviceSystemRepository.Services.ManagerServices
                    oldData.TotalDisks == newData.TotalDisks &&
                    oldData.Status == newData.Status &&
                    AreNetworkInformationsEqual(oldData.Networks, newData.Networks) &&
-                   AreDiskInformationsEqual(oldData.Disks, newData.Disks);
+                   AreDiskInformationsEqual(oldData.Disks, newData.Disks) &&
+                   AreMonitorInformationsEqual(oldData.Monitors, newData.Monitors);
         }
 
         private static bool AreNetworkInformationsEqual(List<NetworkInformationsModel> oldList, List<NetworkInformationsModel> newList)
         {
-            if (oldList.Count != newList.Count)
-                return false;
-
-            for (int i = 0; i < oldList.Count; i++)
+            // Eğer her iki liste de null ise, eşit kabul edebiliriz
+            if (oldList == null && newList == null)
             {
-                if (!oldList[i].Equals(newList[i]))
-                    return false;
+                return true;
             }
 
+            // Eğer biri null, diğeri null değilse, eşit değildir
+            if (oldList == null || newList == null)
+            {
+                return false;
+            }
+
+            // Listelerin uzunlukları farklıysa eşit değildir
+            if (oldList.Count != newList.Count)
+            {
+                return false;
+            }
+
+            // Elemanları karşılaştır
+            for (int i = 0; i < oldList.Count; i++)
+            {
+                // Elemanlardan biri null ise, eşit değildir
+                if (oldList[i] == null || newList[i] == null)
+                {
+                    return false;
+                }
+
+                // NetworkInformationsModel eşitlik kontrolü
+                if (!oldList[i].Equals(newList[i]))
+                {
+                    return false;
+                }
+            }
+
+            // Tüm kontroller geçti, listeler eşittir
             return true;
         }
+
+
+
 
         private static bool AreDiskInformationsEqual(List<DiskInformationsModel> oldList, List<DiskInformationsModel> newList)
         {
-            if (oldList.Count != newList.Count)
+            // Null kontrolü
+            if (oldList == null && newList == null)
+            {
+                return true;
+            }
+
+            if (oldList == null || newList == null)
+            {
                 return false;
+            }
+
+            if (oldList.Count != newList.Count)
+            {
+                return false;
+            }
 
             for (int i = 0; i < oldList.Count; i++)
             {
-                if (!oldList[i].Equals(newList[i]))
+                // DiskInformationsModel eşitlik kontrolü
+                if (!((IEquatable<DiskInformationsModel>)oldList[i]).Equals(newList[i]))
+                {
                     return false;
+                }
             }
 
             return true;
         }
 
-        private static void LogSystemInformation(string label, SystemInformationsModel systemInformations)
+        public static bool AreMonitorInformationsEqual(List<MonitorInformationsModel> oldList, List<MonitorInformationsModel> newList)
+        {
+            // Null kontrolü
+            if (oldList == null && newList == null)
+            {
+                return true;
+            }
+
+            if (oldList == null || newList == null || oldList.Count != newList.Count)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < oldList.Count; i++)
+            {
+                // Null kontrolü ve eşitlik kontrolü
+                if (oldList[i] == null || newList[i] == null)
+                {
+                    return false; // Null olan elemanlar için eşit değildir
+                }
+
+                // MonitorInformationsModel eşitlik kontrolü
+                if (!oldList[i].Equals(newList[i]))
+                {
+                    return false; // Eşit değilse false döner
+                }
+            }
+
+            return true; // Hiçbir eşitsizlik yoksa true döner
+        }
+
+
+        private static JsonSerializerOptions GetOptions()
+        {
+            return new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = true
+            };
+        }
+
+        private static void LogSystemInformation(string label, SystemInformationsModel systemInformations, JsonSerializerOptions options)
         {
             if (systemInformations == null)
             {
@@ -148,11 +274,7 @@ namespace DeviceSystemRepository.Services.ManagerServices
                 return;
             }
 
-            var json = JsonSerializer.Serialize(systemInformations, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = true
-            });
+            var json = JsonSerializer.Serialize(systemInformations, options);
 
             Console.WriteLine($"{label}\n{json}");
         }

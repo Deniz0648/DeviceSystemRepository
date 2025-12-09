@@ -12,6 +12,7 @@ namespace DeviceSystemRepository.Services.InterfaceServices
     {
         public string GetPCSerialNumber();
         public string GetPCModel();
+        List<MonitorInformationsModel> GetMonitorInformations();
         public string GetOSVersion();
         string GetCpuModel(); // CPU modelini al
         string GetGpuModel(); // GPU modelini al

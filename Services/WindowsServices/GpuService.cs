@@ -9,7 +9,6 @@ namespace DeviceSystemRepository.Services.WindowsServices
 {
     internal class GpuService
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Platform uyumluluğunu doğrula", Justification = "<bekleyen>")]
         public static string GetGpuModel()
         {
             try

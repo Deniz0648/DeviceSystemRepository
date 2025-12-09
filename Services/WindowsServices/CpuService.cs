@@ -11,7 +11,6 @@ namespace DeviceSystemRepository.Services.WindowsServices
     {
 
         // CPU modelini almak için metod
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Platform uyumluluğunu doğrula", Justification = "<bekleyen>")]
         public static string GetCpuModel()
         {
 

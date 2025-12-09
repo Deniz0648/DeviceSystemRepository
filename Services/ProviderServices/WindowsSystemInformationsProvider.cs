@@ -1,12 +1,8 @@
 ﻿using DeviceSystemRepository.Models;
 using DeviceSystemRepository.Services.InterfaceServices;
 using DeviceSystemRepository.Services.WindowsServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Management;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace DeviceSystemRepository.Services.ProviderServices
 {
@@ -14,6 +10,7 @@ namespace DeviceSystemRepository.Services.ProviderServices
     {
         public string GetPCSerialNumber() => SerialNumberServices.GetPCSerialNumber();
         public string GetPCModel() => PCModelService.GetPCModel();
+        public List<MonitorInformationsModel> GetMonitorInformations() => MonitorService.GetMonitorInformations();
         public string GetOSVersion() => OsService.GetOSInfo();
 
         // CPU modelini al
@@ -29,7 +26,6 @@ namespace DeviceSystemRepository.Services.ProviderServices
         public int GetInstalledRamModules() => RamService.GetInstalledRamModules();
 
         // Toplam disk sayısını al
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Platform uyumluluğunu doğrula", Justification = "<bekleyen>")]
         public int GetTotalDisks()
         {
             int physicalDisksCount = 0;
@@ -39,7 +35,7 @@ namespace DeviceSystemRepository.Services.ProviderServices
                 // WMI sorgusu ile fiziksel diskleri al
                 var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
 
-                foreach (ManagementObject disk in searcher.Get())
+                foreach (ManagementObject disk in searcher.Get().Cast<ManagementObject>())
                 {
                     // Her fiziksel disk için sayacı artır
                     physicalDisksCount++;

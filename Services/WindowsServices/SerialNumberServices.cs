@@ -32,7 +32,7 @@ namespace DeviceSystemRepository.Services.WindowsServices
                     {
                         string output = reader.ReadToEnd();
                         // Çıktı satırlarını ayır
-                        var lines = output.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                        var lines = output.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
 
                         // İlk satır başlıktı, ikinci satır ise seri numarası
                         if (lines.Length > 1)

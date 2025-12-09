@@ -26,7 +26,7 @@ namespace DeviceSystemRepository
                 }
                 // PulseService'i kullanarak nabýz verisi gönder
                 await _pulseService.PostStatusAsync();
-                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken); // Her 5 dakikada bir çalýþtýr
+                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
             }
 
             Console.WriteLine("Worker durduruldu.");

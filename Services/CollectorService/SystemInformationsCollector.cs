@@ -18,6 +18,7 @@ namespace DeviceSystemRepository.Services.CollectorService
                 Networks = SystemInformationsCollectorHelper.GetNetworkInformations(),
                 PCModel = SystemInformationsCollectorHelper.GetPCModel(),
                 PCSerialNumber = SystemInformationsCollectorHelper.GetPCSerialNumber(),
+                Monitors = SystemInformationsCollectorHelper.GetMonitorInformations(),
                 OSVersion = SystemInformationsCollectorHelper.GetOSVersion(), // İşletim sistemi sürümünü al
                 IPAddress = SystemInformationsCollectorHelper.GetIPAddress(), // IP adresini al
                 MACAddress = SystemInformationsCollectorHelper.GetMACAddress(), // MAC adresini al

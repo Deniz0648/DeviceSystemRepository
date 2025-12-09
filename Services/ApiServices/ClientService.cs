@@ -11,13 +11,18 @@ namespace DeviceSystemRepository.Services.ApiServices
     {
         private readonly HttpClient _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
-        internal async Task PostAsync(SystemInformationsModel systemInformations)
+        internal static JsonSerializerOptions GetOptions()
         {
-            var jsonContent = JsonSerializer.Serialize(systemInformations, new JsonSerializerOptions
+            return new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 WriteIndented = true
-            });
+            };
+        }
+
+        internal async Task PostAsync(SystemInformationsModel systemInformations, JsonSerializerOptions options)
+        {
+            var jsonContent = JsonSerializer.Serialize(systemInformations, options);
             var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
             try
