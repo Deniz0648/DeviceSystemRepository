@@ -11,8 +11,7 @@ Görevi, çalıştığı makinenin çeşitli sistem bilgilerini toplayarak JSON 
 - Toplanan verilerin JSON formatında REST API’ye gönderilmesi  
 - Uygulama çalıştığı sürece belirli aralıklarla aktiflik nabzı üretme  
 - Loglama ve hata yönetimi
-
-- - Windows üzerinde arka planda çalışan Worker Service mimarisi  
+- Windows üzerinde arka planda çalışan Worker Service mimarisi  
 - Setup Project ile kurulum ve registry üzerinden otomatik çalışma
 - İsteğe göre Windows Service olarak kurulum  
 - Konsolsuz (sessiz) çalışma modu  
